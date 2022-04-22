@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "QuizFactory-Frontend", "QuizFactory-Frontend\QuizFactory-Frontend.esproj", "{F34E6BBF-1287-4B11-8C01-355E82CD7233}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuizFactory-Backend", "QuizFactory-Backend\QuizFactory-Backend.csproj", "{816554CA-9082-49C8-B745-745852DD4262}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F34E6BBF-1287-4B11-8C01-355E82CD7233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F34E6BBF-1287-4B11-8C01-355E82CD7233}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F34E6BBF-1287-4B11-8C01-355E82CD7233}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F34E6BBF-1287-4B11-8C01-355E82CD7233}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F34E6BBF-1287-4B11-8C01-355E82CD7233}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F34E6BBF-1287-4B11-8C01-355E82CD7233}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{816554CA-9082-49C8-B745-745852DD4262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{816554CA-9082-49C8-B745-745852DD4262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{816554CA-9082-49C8-B745-745852DD4262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{816554CA-9082-49C8-B745-745852DD4262}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F4C8B7D5-04C8-4570-A735-53036E9628E9}
+	EndGlobalSection
+EndGlobal
