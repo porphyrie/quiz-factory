@@ -13,6 +13,7 @@
   <ItemGroup>
     <Folder Include="src\components\" />
     <Folder Include="src\hooks\" />
+    <Folder Include="src\api\" />
   </ItemGroup>
   <!-- This target is copied from the ASP.NET SPA template in order to ensure node_modules are in place. -->
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
