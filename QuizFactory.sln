@@ -5,7 +5,13 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "QuizFactory-Frontend", "QuizFactory-Frontend\QuizFactory-Frontend.esproj", "{F34E6BBF-1287-4B11-8C01-355E82CD7233}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuizFactory-Backend", "QuizFactory-Backend\QuizFactory-Backend.csproj", "{816554CA-9082-49C8-B745-745852DD4262}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuizFactory-Backend", "QuizFactory-Backend\QuizFactory-Backend.csproj", "{816554CA-9082-49C8-B745-745852DD4262}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E6FFD5D7-EC0B-4902-829F-BF7242D48BF3}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,10 @@
 import { Box, Button, Card, CardContent, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Center from './Center'
 import useForm from '../hooks/useForm'
 import { createAPIEndpoint, ENDPOINTS } from '../api'
+import useStateContext from '../hooks/useStateContext'
+import { useNavigate } from 'react-router-dom'
 
 const getFreshModel = () => ({
     name: '',
@@ -12,8 +14,8 @@ const getFreshModel = () => ({
 //disable default html validation, {} for passing objects
 export default function Login() {
 
-    //const [value, setValue] = useState({ //state object, we pass the intial values
-    //})
+    const { context, setContext, resetContext } = useStateContext();
+    const navigate = useNavigate()
 
     const {
         values,
@@ -23,12 +25,20 @@ export default function Login() {
         handleInputChange
     } = useForm(getFreshModel);
 
+    //from both login and quiz component reset local storage or context API properties to keep the integrity of data saved from the application
+    useEffect(() => {
+        resetContext()
+    },[])
+
     const login = e => { //login function, default parameter e
         e.preventDefault(); //do not reload the form
         if (validate())
             createAPIEndpoint(ENDPOINTS.participant)
                 .post(values)
-                .then(res => console.log(res))
+                .then(res => {
+                    setContext({ participantId: res.data.participantId });
+                    navigate('/quiz');
+                })
                 .catch(err => console.log(err))
     }
 

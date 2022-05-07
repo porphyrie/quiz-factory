@@ -12,23 +12,31 @@ namespace QuizFactory_Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class QuestionsController : ControllerBase
+    public class QuestionController : ControllerBase
     {
         private readonly QuizDbContext _context;
 
-        public QuestionsController(QuizDbContext context)
+        public QuestionController(QuizDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Questions
+        // GET: api/Question
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
         {
-            return await _context.Questions.ToListAsync();
+            var random5Qns = await (_context.Questions
+                .Select(x => new
+                {
+                    QnId = x.QnId,
+                    QnInWords = x.QnInWords,
+                    ImageName = x.ImageName,
+                    Options = new string[] {x.Option1, x.Option2, x.Option3, x.Option4}
+                }).OrderBy(y => Guid.NewGuid()).Take(5).ToListAsync());
+            return Ok(random5Qns);
         }
 
-        // GET: api/Questions/5
+        // GET: api/Question/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Question>> GetQuestion(int id)
         {
@@ -42,7 +50,7 @@ namespace QuizFactory_Backend.Controllers
             return question;
         }
 
-        // PUT: api/Questions/5
+        // PUT: api/Question/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutQuestion(int id, Question question)
@@ -73,18 +81,26 @@ namespace QuizFactory_Backend.Controllers
             return NoContent();
         }
 
-        // POST: api/Questions
+        // POST: api/Question/GetAnswers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Question>> PostQuestion(Question question)
+        [Route("GetAnswers")]
+        public async Task<ActionResult<Question>> RetrieveAnswers(int[] qnIds)
         {
-            _context.Questions.Add(question);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetQuestion", new { id = question.QnId }, question);
+            var answers = await(_context.Questions
+                .Where(x=>qnIds.Contains(x.QnId))
+                .Select(y => new
+                {
+                    QnId = y.QnId,
+                    QnInWords = y.QnInWords,
+                    ImageName = y.ImageName,
+                    Options = new string[] { y.Option1, y.Option2, y.Option3, y.Option4 },
+                    Answer=y.Answer
+                })).ToListAsync();
+            return Ok(answers);
         }
 
-        // DELETE: api/Questions/5
+        // DELETE: api/Question/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuestion(int id)
         {

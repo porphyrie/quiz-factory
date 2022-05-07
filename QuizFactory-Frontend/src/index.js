@@ -6,20 +6,27 @@ import reportWebVitals from './reportWebVitals';
 import { createTheme } from '@mui/material/styles'
 import { ThemeProvider } from '@emotion/react';
 import { CssBaseline } from '@mui/material';
+import { ContextProvider } from './hooks/useStateContext';
 
 const darkTheme = createTheme({
     palette: {
         mode: 'dark'
+    },
+    typography: {
+        fontFamily: '"IBM Plex Sans"'
     }
 });
 
+//now the app component and its children components can access the data from this context provider
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
-        <ThemeProvider theme={darkTheme}>
-            <CssBaseline/>
-            <App />
-        </ThemeProvider>
+        <ContextProvider>
+            <ThemeProvider theme={darkTheme}>
+                <CssBaseline />
+                <App />
+            </ThemeProvider>
+        </ContextProvider>
     </React.StrictMode>
 );
 

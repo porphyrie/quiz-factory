@@ -4,7 +4,9 @@ export const BASE_URL = 'https://localhost:7286/';
 
 //in order to avoid typos in components requests
 export const ENDPOINTS = {
-    participant: 'participant'
+    participant: 'Participant',
+    question: 'Question',
+    getAnswers: 'question/getanswers'
 }
 
 export const createAPIEndpoint = endpoint => {

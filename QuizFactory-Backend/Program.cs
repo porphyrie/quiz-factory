@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using QuizFactory_Backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,13 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection"))
 //afte that, create api controllers for those model classes
 
 var app = builder.Build();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Images")),
+    RequestPath="/Images"
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
