@@ -62,7 +62,7 @@ namespace QuizFactoryAPI.Services
                             FirstName = user.FirstName
                         }).ToList();
 
-                coursesRes.Add(new GetCourseResponse(course.CourseName, students, students.Count));
+                coursesRes.Add(new GetCourseResponse(course.Id, course.CourseName, students, students.Count));
             }
 
             return coursesRes;

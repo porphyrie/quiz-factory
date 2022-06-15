@@ -8,6 +8,8 @@ namespace QuizFactoryAPI.Services
     public interface IQuestionService
     {
         void AddQuestion(AddQuestionRequest model);
+
+        List<GetQuestionResponse> GetQuestions(int subjectId, int categoryId);
     }
     public class QuestionService : IQuestionService
     {
@@ -38,6 +40,12 @@ namespace QuizFactoryAPI.Services
             // save 
             _context.QuestionTypes.Add(question);
             _context.SaveChanges();
+        }
+
+        public List<GetQuestionResponse> GetQuestions(int subjectId, int categoryId)
+        {
+            var questions = _context.QuestionTypes.Where(x => x.SubjectId == subjectId && x.CategoryId == categoryId).Select(x => new GetQuestionResponse(x.Id, x.QuestionTemplateString)).ToList();
+            return questions;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace QuizFactoryAPI.Controllers
             return Ok(new { message = "The category has been added" });
         }
 
-        [Authorize(Role.admin)]
+        [Authorize(Role.admin, Role.profesor)]
         [HttpGet("{subjectId}")]
         public IActionResult GetSubjects(int subjectId)
         {

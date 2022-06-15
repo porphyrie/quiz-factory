@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
-import SetTestDetails from './pages/teacher/SetTestDetails';
 import AddQuestions from './pages/teacher/AddQuestions';
 import Tests from './pages/Tests';
 import Test from './pages/Test';
@@ -28,7 +27,6 @@ export default function App() {
               <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/settestdetails" element={<SetTestDetails />} />
               <Route path="/addquestions" element={<AddQuestions />} />
               <Route path="/tests" element={<Tests />} />
               <Route path="/test" element={<Test />} />

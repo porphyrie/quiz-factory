@@ -36,17 +36,17 @@ export default function AddObjects() {
 
     const [subjects1, setSubjects1] = useState([]);
 
+    const [subject1, setSubject1] = useState({});
+
     useEffect(() => {
         createAPIEndpoint(ENDPOINTS.subjects)
             .authFetch()
             .then(res => {
                 setSubjects1(res.data);
-                setSubject(res.data[0]);
+                setSubject1(res.data[0]);
             })
             .catch(err => alert(err));
     }, []);
-
-    const [subject1, setSubject1] = useState({});
 
     const [categories1, setCategories1] = useState([])
 

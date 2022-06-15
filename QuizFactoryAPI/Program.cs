@@ -31,6 +31,8 @@ services.AddScoped<ICourseService, CourseService>();
 services.AddScoped<ISubjectService, SubjectService>();
 services.AddScoped<ICategoryService, CategoryService>();
 services.AddScoped<IQuestionService, QuestionService>();
+services.AddScoped<ITestService, TestService>();
+services.AddScoped<IResultService, ResultService>();
 
 var app = builder.Build();
 

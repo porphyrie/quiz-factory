@@ -33,7 +33,7 @@ namespace QuizFactoryAPI.Controllers
             return Ok(new { message = "The subject has been added" });
         }
 
-        [Authorize(Role.admin)]
+        [Authorize(Role.admin, Role.profesor)]
         [HttpGet]
         public IActionResult GetSubjects()
         {

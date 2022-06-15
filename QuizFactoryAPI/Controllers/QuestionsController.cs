@@ -33,5 +33,13 @@ namespace QuizFactoryAPI.Controllers
             return Ok(new { message = "The question has been added" });
         }
 
+        [Authorize(Role.admin, Role.profesor)]
+        [HttpGet]
+        public IActionResult GetQuestions([FromQuery(Name = "subjectId")] int subjectId, [FromQuery(Name = "categoryId")] int categoryId)
+        {
+            var questions = _questionService.GetQuestions(subjectId, categoryId);
+            return Ok(questions);
+        }
+
     }
 }
