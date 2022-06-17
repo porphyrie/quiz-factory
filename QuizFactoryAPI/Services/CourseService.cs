@@ -10,6 +10,8 @@ namespace QuizFactoryAPI.Services
     {
         void AddCourse(AddCourseRequest model);
         List<GetCourseResponse> GetCourses(string professorUsername);
+        List<GetStdCourseResponse> GetAllCourses();
+        List<GetStdCourseResponse> GetEnrolledCourses(string studentUsername);
     }
 
     public class CourseService : ICourseService
@@ -43,29 +45,39 @@ namespace QuizFactoryAPI.Services
         {
             var courses = _context.Courses
                 .Where(x => x.ProfessorUsername == professorUsername)
-                .Select(x => new { x.Id, x.CourseName }).ToList();
+                .Select(x => new { x.Id, x.CourseName, x.StudentUsernames }).ToList();
 
             List<GetCourseResponse> coursesRes = new List<GetCourseResponse>();
 
             foreach (var course in courses)
             {
-                var students = _context.EnrolledStudents
-                    .Where(x => x.CourseId == course.Id)
-                    .Select(x => new { x.StudentUsername })
-                    .Join(_context.Users,
-                        enrolledStudent => enrolledStudent.StudentUsername,
-                        user => user.Username,
-                        (enrolledStudent, user) => new GetCourseResponse.Participant()
-                        {
-                            Username = enrolledStudent.StudentUsername,
-                            LastName = user.LastName,
-                            FirstName = user.FirstName
-                        }).ToList();
+                var participants = course.StudentUsernames.Select(user => new GetCourseResponse.Participant()
+                {
+                    Username = user.Username,
+                    LastName = user.LastName,
+                    FirstName = user.FirstName
+                }).ToList();
 
-                coursesRes.Add(new GetCourseResponse(course.Id, course.CourseName, students, students.Count));
+                coursesRes.Add(new GetCourseResponse(course.Id, course.CourseName, participants, participants.Count));
             }
 
             return coursesRes;
+        }
+
+        public List<GetStdCourseResponse> GetAllCourses()
+        {
+            var courses = _context.Courses
+                .Select(x => new GetStdCourseResponse(x.Id, x.CourseName)).ToList();
+
+            return courses;
+        }
+
+        public List<GetStdCourseResponse> GetEnrolledCourses(string studentUsername)
+        {
+            var courses = _context.Users.FirstOrDefault(x => x.Username == studentUsername).Courses
+                .Select(x => new GetStdCourseResponse( x.Id, x.CourseName)).ToList();
+
+            return courses;
         }
     }
 }

@@ -8,6 +8,11 @@ namespace QuizFactoryAPI.Entities
 {
     public partial class Result
     {
+        public Result()
+        {
+            ResultDetails = new HashSet<ResultDetail>();
+        }
+
         [Key]
         [Column("ID")]
         public int Id { get; set; }
@@ -15,25 +20,17 @@ namespace QuizFactoryAPI.Entities
         public string StudentUsername { get; set; } = null!;
         [Column("TestID")]
         public int TestId { get; set; }
-        [Column("QuestionTypeID")]
-        public int QuestionTypeId { get; set; }
-        [StringLength(250)]
-        public string Question { get; set; } = null!;
-        [StringLength(50)]
-        public string CorrectAnswer { get; set; } = null!;
-        [StringLength(50)]
-        public string? Answer { get; set; }
-        [StringLength(250)]
-        public string? Feedback { get; set; }
+        public double? Grade { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? FinishTime { get; set; }
 
-        [ForeignKey("QuestionTypeId")]
-        [InverseProperty("Results")]
-        public virtual QuestionType QuestionType { get; set; } = null!;
         [ForeignKey("StudentUsername")]
         [InverseProperty("Results")]
         public virtual User StudentUsernameNavigation { get; set; } = null!;
         [ForeignKey("TestId")]
         [InverseProperty("Results")]
         public virtual Test Test { get; set; } = null!;
+        [InverseProperty("Result")]
+        public virtual ICollection<ResultDetail> ResultDetails { get; set; }
     }
 }

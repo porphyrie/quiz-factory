@@ -32,5 +32,22 @@ namespace QuizFactoryAPI.Controllers
             _testService.AddTest(model);
             return Ok(new { message = "The test has been created" });
         }
+
+        [Authorize(Role.profesor, Role.student)]
+        [HttpGet("{username}")]
+        public IActionResult GetTests(string username)
+        {
+            var currentUser = (User)HttpContext.Items["User"];
+            var tests = _testService.GetTests(username, currentUser.Role.ToString());
+            return Ok(tests);
+        }
+
+        [Authorize(Role.profesor)]
+        [HttpGet("{testId}")]
+        public IActionResult GetTestDetails(int testId)
+        {
+            var testDetails = _testService.GetTestDetails(testId);
+            return Ok(testDetails);
+        }
     }
 }

@@ -23,5 +23,13 @@ namespace QuizFactoryAPI.Controllers
         {
             _resultService = resultService;
         }
+
+        [Authorize(Role.profesor, Role.student)]
+        [HttpGet]
+        public IActionResult GetResult([FromQuery(Name = "username")] string username, [FromQuery(Name = "testId")] int testId)
+        {
+            var result = _resultService.GetResult(username, testId);
+            return Ok(result);
+        }
     }
 }

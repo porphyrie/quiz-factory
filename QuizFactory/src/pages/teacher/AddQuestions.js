@@ -1,3 +1,4 @@
+import { setNestedObjectValues } from 'formik';
 import moment from 'moment';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
@@ -5,14 +6,6 @@ import { Col, Container, Form, Row, Stack, Button, FormGroup } from 'react-boots
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/Navigation';
 import { createAPIEndpoint, ENDPOINTS } from '../../helpers/API';
-
-const ceva = {
-  data: {
-    columns: [],
-    rows: []
-  }
-}
-
 
 export default function AddQuestions() {
 

@@ -10,7 +10,8 @@ namespace QuizFactoryAPI.Entities
     {
         public QuestionType()
         {
-            Results = new HashSet<Result>();
+            ResultDetails = new HashSet<ResultDetail>();
+            TestQuestionTypes = new HashSet<TestQuestionType>();
         }
 
         [Key]
@@ -36,6 +37,8 @@ namespace QuizFactoryAPI.Entities
         [InverseProperty("QuestionTypes")]
         public virtual Subject Subject { get; set; } = null!;
         [InverseProperty("QuestionType")]
-        public virtual ICollection<Result> Results { get; set; }
+        public virtual ICollection<ResultDetail> ResultDetails { get; set; }
+        [InverseProperty("QuestionType")]
+        public virtual ICollection<TestQuestionType> TestQuestionTypes { get; set; }
     }
 }

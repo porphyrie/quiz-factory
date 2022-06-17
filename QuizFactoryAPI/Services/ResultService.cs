@@ -6,7 +6,7 @@ namespace QuizFactoryAPI.Services
     public interface IResultService
     {
         void AddResult(AddResultRequest model);
-        //List<GetSubjectResponse> GetSubjects();
+        GetResultResponse GetResult(string username, int testId);
     }
     public class ResultService : IResultService
     {
@@ -33,11 +33,17 @@ namespace QuizFactoryAPI.Services
             //_context.Subjects.Add(subject);
             //_context.SaveChanges();
         }
+        public GetResultResponse GetResult(string username, int testId)
+        {
+            var userData = _context.Users.FirstOrDefault(x => x.Username == username);
 
-        //public List<GetSubjectResponse> GetSubjects()
-        //{
-        //    var subjects = _context.Subjects.Select(x => new GetSubjectResponse(x.Id, x.SubjectName)).ToList();
-        //    return subjects;
-        //}
+            var test = _context.Tests.FirstOrDefault(x => x.Id == testId);
+
+            var grade = (float)test.Results.First(x => x.StudentUsername == username).Grade;
+
+            var questions = test.Results.First(x => x.StudentUsername == username).ResultDetails.Select(x => new GetResultResponse.QuestionAnswer(x.Question, x.CorrectAnswer, x.Answer)).ToList();
+
+            return new GetResultResponse(userData.Username, userData.LastName, userData.FirstName, grade, test.TestName, test.TestDate, test.TestDuration, test.TestQuestionTypes.Count, questions);
+        }
     }
 }

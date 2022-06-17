@@ -21,9 +21,9 @@ namespace QuizFactoryAPI.Data
 
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<Course> Courses { get; set; } = null!;
-        public virtual DbSet<EnrolledStudent> EnrolledStudents { get; set; } = null!;
         public virtual DbSet<QuestionType> QuestionTypes { get; set; } = null!;
         public virtual DbSet<Result> Results { get; set; } = null!;
+        public virtual DbSet<ResultDetail> ResultDetails { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
         public virtual DbSet<Test> Tests { get; set; } = null!;
         public virtual DbSet<TestQuestionType> TestQuestionTypes { get; set; } = null!;
@@ -55,21 +55,23 @@ namespace QuizFactoryAPI.Data
                     .HasForeignKey(d => d.ProfessorUsername)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Courses_Users");
-            });
 
-            modelBuilder.Entity<EnrolledStudent>(entity =>
-            {
-                entity.HasOne(d => d.Course)
-                    .WithMany()
-                    .HasForeignKey(d => d.CourseId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EnrolledStudents_Courses");
+                entity.HasMany(d => d.StudentUsernames)
+                    .WithMany(p => p.CoursesNavigation)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "EnrolledStudent",
+                        l => l.HasOne<User>().WithMany().HasForeignKey("StudentUsername").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_EnrolledStudents_Users"),
+                        r => r.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_EnrolledStudents_Courses"),
+                        j =>
+                        {
+                            j.HasKey("CourseId", "StudentUsername");
 
-                entity.HasOne(d => d.StudentUsernameNavigation)
-                    .WithMany()
-                    .HasForeignKey(d => d.StudentUsername)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_EnrolledStudents_Users");
+                            j.ToTable("EnrolledStudents");
+
+                            j.IndexerProperty<int>("CourseId").HasColumnName("CourseID");
+
+                            j.IndexerProperty<string>("StudentUsername").HasMaxLength(50);
+                        });
             });
 
             modelBuilder.Entity<QuestionType>(entity =>
@@ -89,12 +91,6 @@ namespace QuizFactoryAPI.Data
 
             modelBuilder.Entity<Result>(entity =>
             {
-                entity.HasOne(d => d.QuestionType)
-                    .WithMany(p => p.Results)
-                    .HasForeignKey(d => d.QuestionTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Results_QuestionTypes");
-
                 entity.HasOne(d => d.StudentUsernameNavigation)
                     .WithMany(p => p.Results)
                     .HasForeignKey(d => d.StudentUsername)
@@ -106,6 +102,21 @@ namespace QuizFactoryAPI.Data
                     .HasForeignKey(d => d.TestId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Results_Tests");
+            });
+
+            modelBuilder.Entity<ResultDetail>(entity =>
+            {
+                entity.HasOne(d => d.QuestionType)
+                    .WithMany(p => p.ResultDetails)
+                    .HasForeignKey(d => d.QuestionTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ResultDetails_QuestionTypes");
+
+                entity.HasOne(d => d.Result)
+                    .WithMany(p => p.ResultDetails)
+                    .HasForeignKey(d => d.ResultId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ResultDetails_Results");
             });
 
             modelBuilder.Entity<Test>(entity =>
@@ -120,13 +131,13 @@ namespace QuizFactoryAPI.Data
             modelBuilder.Entity<TestQuestionType>(entity =>
             {
                 entity.HasOne(d => d.QuestionType)
-                    .WithMany()
+                    .WithMany(p => p.TestQuestionTypes)
                     .HasForeignKey(d => d.QuestionTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TestQuestionTypes_QuestionTypes");
 
                 entity.HasOne(d => d.Test)
-                    .WithMany()
+                    .WithMany(p => p.TestQuestionTypes)
                     .HasForeignKey(d => d.TestId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TestQuestionTypes_Tests");

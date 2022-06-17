@@ -41,6 +41,22 @@ namespace QuizFactoryAPI.Controllers
             return Ok(courses);
         }
 
+        [Authorize(Role.student)]
+        [HttpGet]
+        public IActionResult GetAllCourses()
+        {
+            var courses = _courseService.GetAllCourses();
+            return Ok(courses);
+        }
+
+        [Authorize(Role.student)]
+        [HttpGet("{studentUsername}")]
+        public IActionResult GetEnrolledCourses(string studentUsername)
+        {
+            var courses = _courseService.GetEnrolledCourses(studentUsername);
+            return Ok(courses);
+        }
+
         //// GET: api/Courses
         //[HttpGet]
         //public async Task<ActionResult<IEnumerable<Course>>> GetCourses()

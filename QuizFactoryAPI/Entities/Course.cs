@@ -11,6 +11,7 @@ namespace QuizFactoryAPI.Entities
         public Course()
         {
             Tests = new HashSet<Test>();
+            StudentUsernames = new HashSet<User>();
         }
 
         [Key]
@@ -26,5 +27,9 @@ namespace QuizFactoryAPI.Entities
         public virtual User ProfessorUsernameNavigation { get; set; } = null!;
         [InverseProperty("Course")]
         public virtual ICollection<Test> Tests { get; set; }
+
+        [ForeignKey("CourseId")]
+        [InverseProperty("CoursesNavigation")]
+        public virtual ICollection<User> StudentUsernames { get; set; }
     }
 }

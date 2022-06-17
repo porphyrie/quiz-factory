@@ -12,6 +12,7 @@ namespace QuizFactoryAPI.Entities
         {
             Courses = new HashSet<Course>();
             Results = new HashSet<Result>();
+            CoursesNavigation = new HashSet<Course>();
         }
 
         [Key]
@@ -30,5 +31,9 @@ namespace QuizFactoryAPI.Entities
         public virtual ICollection<Course> Courses { get; set; }
         [InverseProperty("StudentUsernameNavigation")]
         public virtual ICollection<Result> Results { get; set; }
+
+        [ForeignKey("StudentUsername")]
+        [InverseProperty("StudentUsernames")]
+        public virtual ICollection<Course> CoursesNavigation { get; set; }
     }
 }
