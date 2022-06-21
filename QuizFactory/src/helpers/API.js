@@ -10,7 +10,9 @@ export const ENDPOINTS = {
     subjects: 'subjects',
     categories: 'categories',
     questions: 'questions',
-    tests: 'tests'
+    tests: 'tests',
+    test: 'tests/test',
+    enrollment: 'courses/enrollment',
 }
 
 export const createAPIEndpoint = endpoint => {

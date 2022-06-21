@@ -12,6 +12,8 @@ namespace QuizFactoryAPI.Services
         List<GetCourseResponse> GetCourses(string professorUsername);
         List<GetStdCourseResponse> GetAllCourses();
         List<GetStdCourseResponse> GetEnrolledCourses(string studentUsername);
+
+        void AddEnrolledStudent(AddEnrolledStudentRequest model);
     }
 
     public class CourseService : ICourseService
@@ -74,10 +76,30 @@ namespace QuizFactoryAPI.Services
 
         public List<GetStdCourseResponse> GetEnrolledCourses(string studentUsername)
         {
-            var courses = _context.Users.FirstOrDefault(x => x.Username == studentUsername).Courses
+            var user = _context.Users.FirstOrDefault(x => x.Username == studentUsername);
+
+            _context.Entry<User>(user).Collection(u => u.CoursesNavigation).Load();
+
+            var courses = user.CoursesNavigation
                 .Select(x => new GetStdCourseResponse( x.Id, x.CourseName)).ToList();
 
             return courses;
+        }
+
+        public void AddEnrolledStudent(AddEnrolledStudentRequest model)
+        {
+            var course = _context.Courses.FirstOrDefault(x => x.Id == model.CourseId);
+            var student = _context.Users.FirstOrDefault(x => x.Username == model.StudentUsername);
+
+            _context.Entry<Course>(course).Collection(c => c.StudentUsernames).Load();
+
+            // validate
+            if (course.StudentUsernames.FirstOrDefault(x=>x.Username == model.StudentUsername) == student)
+                throw new AppException("Student '" + model.StudentUsername + "' has already been enrolled");
+
+            // save course
+            course.StudentUsernames.Add(student);
+            _context.SaveChanges();
         }
     }
 }

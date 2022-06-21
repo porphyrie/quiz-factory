@@ -33,27 +33,38 @@ namespace QuizFactoryAPI.Controllers
             return Ok(new { message = "The course has been created" });
         }
 
-        [Authorize(Role.profesor)]
-        [HttpGet("{professorUsername}")]
-        public IActionResult GetCourses(string professorUsername)
+        [Authorize(Role.student)]
+        [HttpPost("enrollment")]
+        public IActionResult AddEnrolledStudent(AddEnrolledStudentRequest model)
         {
-            var courses = _courseService.GetCourses(professorUsername);
-            return Ok(courses);
+            _courseService.AddEnrolledStudent(model);
+            return Ok(new { message = "The student has been enrolled" });
         }
 
-        [Authorize(Role.student)]
+        [Authorize(Role.profesor, Role.student)]
+        [HttpGet("{username}")]
+        public IActionResult GetCourses(string username)
+        {
+            var currentUser = (User)HttpContext.Items["User"];
+            var role = currentUser.Role.ToString();
+
+            if (role == Role.profesor.ToString())
+            {
+                var courses = _courseService.GetCourses(username);
+                return Ok(courses);
+            }
+            else
+            {
+                var courses = _courseService.GetEnrolledCourses(username);
+                return Ok(courses);
+            }
+        }
+
+        [Authorize(Role.profesor, Role.student)]
         [HttpGet]
         public IActionResult GetAllCourses()
         {
             var courses = _courseService.GetAllCourses();
-            return Ok(courses);
-        }
-
-        [Authorize(Role.student)]
-        [HttpGet("{studentUsername}")]
-        public IActionResult GetEnrolledCourses(string studentUsername)
-        {
-            var courses = _courseService.GetEnrolledCourses(studentUsername);
             return Ok(courses);
         }
 

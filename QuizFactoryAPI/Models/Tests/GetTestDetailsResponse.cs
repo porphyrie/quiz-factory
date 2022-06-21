@@ -4,10 +4,10 @@
     {
         public class Result
         {
-            public string Username;
-            public string LastName;
-            public string FirstName;
-            public float Grade;
+            public string Username { get; set; }
+            public string LastName { get; set; }
+            public string FirstName { get; set; }
+            public float Grade { get; set; }
 
             public Result(string username, string lastName, string firstName, float grade)
             {
@@ -19,8 +19,8 @@
         }
         public class QuestionType
         {
-            public int Id;
-            public string TemplateString;
+            public int Id { get; set; }
+            public string TemplateString { get; set; }
 
             public QuestionType(int id, string templateString)
             {
@@ -30,11 +30,11 @@
         }
         public class Statistics
         {
-            public float HighestGrade;
-            public float LowestGrade;
-            public float AvgResponseTime;
-            public List<QuestionType> MostAnsweredQuestions;
-            public List<QuestionType> LeastAnsweredQuestions;
+            public float HighestGrade { get; set; }
+            public float LowestGrade { get; set; }
+            public float AvgResponseTime { get; set; }
+            public List<QuestionType> MostAnsweredQuestions { get; set; }
+            public List<QuestionType> LeastAnsweredQuestions { get; set; }
 
             public Statistics(float highestGrade, float lowestGrade, float avgResponseTime, List<QuestionType> mostAnsweredQuestions, List<QuestionType> leastAnsweredQuestions)
             {

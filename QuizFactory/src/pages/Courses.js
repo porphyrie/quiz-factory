@@ -32,31 +32,78 @@ export default function Courses() {
 
     const [isSubmitted, setIsSubmitted] = useState(0);
 
+    const [chosenCourse, setChosenCourse] = useState({});
+
     const handleSubmit = (values) => {
-        const fields = {
-            coursename: values.coursename,
-            professorusername: getUsername()
+        if (getUserType() === 'professor') {
+            const fields = {
+                coursename: values.coursename,
+                professorusername: getUsername()
+            }
+
+            createAPIEndpoint(ENDPOINTS.courses)
+                .authPost(fields)
+                .then(res => {
+                    alert(res.data.message);
+                })
+                .catch(err => alert(err));
+
+            setIsSubmitted(isSubmitted + 1);
+            console.log(isSubmitted);
         }
+        else if (getUserType() === 'student') {
+            const fields = {
+                courseId: chosenCourse.courseId,
+                studentUsername: getUsername()
+            }
+            createAPIEndpoint(ENDPOINTS.enrollment)
+                .authPost(fields)
+                .then(res => {
+                    alert(res.data.message);
+                })
+                .catch(err => alert(err));
 
-        createAPIEndpoint(ENDPOINTS.courses)
-            .authPost(fields)
-            .then(res => {
-                alert(res.data.message);
-            })
-            .catch(err => alert(err));
-
-        setIsSubmitted(isSubmitted + 1);
-        console.log(isSubmitted);
+            setIsSubmitted(isSubmitted + 1);
+            console.log(isSubmitted);
+        }
     }
 
+    const [enrolledCourses, setEnrolledCourses] = useState([]);
+
     useEffect(() => {
-        createAPIEndpoint(ENDPOINTS.courses)
-            .authFetchById(getUsername())
-            .then(res => {
-                setCourses(res.data);
-            })
-            .catch(err => alert(err));
+        if (getUserType() === 'professor') {
+            createAPIEndpoint(ENDPOINTS.courses)
+                .authFetchById(getUsername())
+                .then(res => {
+                    setCourses(res.data);
+                })
+                .catch(err => alert(err));
+        }
+        else if (getUserType() === 'student') {
+            createAPIEndpoint(ENDPOINTS.courses)
+                .authFetchById(getUsername())
+                .then(res => {
+                    setEnrolledCourses(res.data);
+                    console.log(res.data);
+                })
+                .catch(err => alert(err));
+
+            createAPIEndpoint(ENDPOINTS.courses)
+                .authFetch()
+                .then(res => {
+                    setCourses(res.data);
+                    if (!isSubmitted)
+                        setChosenCourse(res.data[0]);
+                })
+                .catch(err => alert(err));
+        }
     }, [isSubmitted]);
+
+    const handleCourseChange = e => {
+        const courseId = e.target.value;
+        const courseName = e.target.options[e.target.selectedIndex].text;
+        setChosenCourse({ courseId: courseId, courseName: courseName });
+    };
 
     return (
         <Container className='bg-violet-300 p-10 space-y-5'>
@@ -102,12 +149,12 @@ export default function Courses() {
                     <>
                         <h4 className='font-bold'>Înscrie-te într-un curs</h4>
                         <Stack direction="horizontal" className='space-x-5'>
-                            <Form.Select>
+                            <Form.Select required onChange={handleCourseChange}>
                                 {courses.map((course) => (
-                                    <option>{course.coursename}</option>
+                                    <option value={course.courseId}>{course.courseName}</option>
                                 ))}
                             </Form.Select>
-                            <Button type='submit' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white ms-auto w-fit text-nowrap' style={{}} onClick={handleSubmit}>Înscrie-te</Button>
+                            <Button type='submit' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white ms-auto w-fit text-nowrap' onClick={handleSubmit}>Înscrie-te</Button>
                         </Stack>
                     </>
                 }
@@ -154,9 +201,15 @@ export default function Courses() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>dxhfhdfxg</td>
-                                </tr>
+                                {
+                                    enrolledCourses.length
+                                        ? enrolledCourses.map((course) => (
+                                            <tr>
+                                                <td>{course.courseName}</td>
+                                            </tr>
+                                        ))
+                                        : <tr><td>Nu ești înscris în niciun curs.</td></tr>
+                                }
                             </tbody>
                         </Table>
                     </>

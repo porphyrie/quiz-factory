@@ -38,16 +38,25 @@ namespace QuizFactoryAPI.Controllers
         public IActionResult GetTests(string username)
         {
             var currentUser = (User)HttpContext.Items["User"];
-            var tests = _testService.GetTests(username, currentUser.Role.ToString());
+            var tests = _testService.GetTests(username, currentUser.Role.ToString()).OrderByDescending(x=>x.TestDate);
             return Ok(tests);
         }
 
-        [Authorize(Role.profesor)]
-        [HttpGet("{testId}")]
+        [Authorize(Role.profesor, Role.student)]
+        [HttpGet("test/{testId}")]
         public IActionResult GetTestDetails(int testId)
         {
-            var testDetails = _testService.GetTestDetails(testId);
-            return Ok(testDetails);
+            var currentUser = (User)HttpContext.Items["User"];
+            if (currentUser.Role.ToString() == Role.profesor.ToString())
+            {
+                var testDetails = _testService.GetTestDetails(testId);
+                return Ok(testDetails);
+            }
+            else
+            {
+                var testSummary = _testService.GetTestSummary(testId);
+                return Ok(testSummary);
+            }
         }
     }
 }

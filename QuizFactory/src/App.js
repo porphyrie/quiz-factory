@@ -29,7 +29,7 @@ export default function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/addquestions" element={<AddQuestions />} />
               <Route path="/tests" element={<Tests />} />
-              <Route path="/test" element={<Test />} />
+              <Route path="/test/:testId" element={<Test />} />
               <Route path="/question" element={<Question />} />
               <Route path="/testresults" element={<TestResults />} />
               <Route path="/courses" element={<Courses />} />

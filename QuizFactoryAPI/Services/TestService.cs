@@ -1,4 +1,5 @@
-﻿using QuizFactoryAPI.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using QuizFactoryAPI.Data;
 using QuizFactoryAPI.Entities;
 using QuizFactoryAPI.Models.Tests;
 
@@ -6,9 +7,10 @@ namespace QuizFactoryAPI.Services
 {
     public interface ITestService
     {
-       void AddTest(AddTestRequest model);
-       List<GetTestResponse> GetTests(string username, string role);
-       GetTestDetailsResponse GetTestDetails(int testId);
+        void AddTest(AddTestRequest model);
+        List<GetTestResponse> GetTests(string username, string role);
+        GetTestDetailsResponse GetTestDetails(int testId);
+        GetTestSummaryResponse GetTestSummary(int testId);
     }
     public class TestService : ITestService
     {
@@ -56,13 +58,19 @@ namespace QuizFactoryAPI.Services
             if (role == Role.profesor.ToString())
                 courses = _context.Courses.Where(x => x.ProfessorUsername == username).ToList();
             else if (role == Role.student.ToString())
-                courses = _context.Users.FirstOrDefault(x => x.Username == username).Courses.ToList();
+            {
+                var user = _context.Users.FirstOrDefault(x => x.Username == username);
+                _context.Entry<User>(user).Collection(u => u.CoursesNavigation).Load();
+                courses = user.CoursesNavigation.ToList();
+            }
+
+
 
             List<GetTestResponse> tests = new List<GetTestResponse>();
 
             foreach (var course in courses)
             {
-                var courseTests = _context.Tests.Where(x => x.CourseId == course.Id).Select(x => new GetTestResponse(x.CourseId, x.Id, x.TestName, x.TestDate, x.TestDuration, x.TestQuestionTypes.Count));
+                var courseTests = _context.Tests.Where(x => x.CourseId == course.Id).Select(x => new GetTestResponse(x.CourseId, course.CourseName, x.Id, x.TestName, x.TestDate, x.TestDuration, x.TestQuestionTypes.Count));
                 tests.AddRange(courseTests);
             }
 
@@ -110,6 +118,13 @@ namespace QuizFactoryAPI.Services
             var stats = new GetTestDetailsResponse.Statistics(highestGrade, lowestGrade, avgResponseTime, maxQuestionTypes, minQuestionTypes);
 
             return new GetTestDetailsResponse(test.Id, test.TestName, test.TestDate, test.TestDuration, questionTypes, stdResults, stats);
+        }
+
+        public GetTestSummaryResponse GetTestSummary(int testId)
+        {
+            var test = _context.Tests.Include(t => t.TestQuestionTypes).ThenInclude(qt => qt.QuestionType).FirstOrDefault(x => x.Id == testId);
+            var questionTypes = test.TestQuestionTypes.Select(x => new GetTestSummaryResponse.QuestionType(x.QuestionTypeId, x.QuestionType.QuestionTemplateString)).ToList();
+            return new GetTestSummaryResponse(test.Id, test.TestName, test.TestDate, test.TestDuration, questionTypes.Count, questionTypes);
         }
     }
 }
