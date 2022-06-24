@@ -15,7 +15,7 @@ namespace QuizFactoryAPI.Entities
         public int ResultId { get; set; }
         [Column("QuestionTypeID")]
         public int QuestionTypeId { get; set; }
-        [StringLength(250)]
+        [StringLength(1000)]
         public string Question { get; set; } = null!;
         [StringLength(50)]
         public string CorrectAnswer { get; set; } = null!;

@@ -51,13 +51,16 @@ export default function AddObjects() {
     const [categories1, setCategories1] = useState([])
 
     useEffect(() => {
-        if (subject1.subjectId !== undefined) {
-            createAPIEndpoint(ENDPOINTS.categories)
-                .authFetchById(subject1.subjectId)
-                .then(res => {
-                    setCategories1(res.data);
-                })
-                .catch(err => alert(err));
+        if (subject1) {
+            console.log("haha");
+            if (Object.keys(subject1).length) {
+                createAPIEndpoint(ENDPOINTS.categories)
+                    .authFetchById(subject1.subjectId)
+                    .then(res => {
+                        setCategories1(res.data);
+                    })
+                    .catch(err => alert(err));
+            }
         }
     }, [subject1]);
 
@@ -99,14 +102,16 @@ export default function AddObjects() {
     const [categories2, setCategories2] = useState([])
 
     useEffect(() => {
-        if (subject2.subjectId !== undefined) {
-            createAPIEndpoint(ENDPOINTS.categories)
-                .authFetchById(subject2.subjectId)
-                .then(res => {
-                    setCategories2(res.data);
-                    setCategory2(res.data[0]);
-                })
-                .catch(err => alert(err));
+        if (subject2) {
+            if (Object.keys(subject2).length) {
+                createAPIEndpoint(ENDPOINTS.categories)
+                    .authFetchById(subject2.subjectId)
+                    .then(res => {
+                        setCategories2(res.data);
+                        setCategory2(res.data[0]);
+                    })
+                    .catch(err => alert(err));
+            }
         }
     }, [subject2]);
 
@@ -168,7 +173,7 @@ export default function AddObjects() {
     const handleQuestionSubmit = e => {
         e.preventDefault();
 
-        const question = {
+        let question = {
             subjectId: subject2.subjectId,
             categoryId: category2.categoryId,
             questionTemplateString: questionTemplate,
@@ -215,11 +220,15 @@ export default function AddObjects() {
                             </tr>
                         </thead>
                         <tbody>
-                            {subjects.map((subject) => (
-                                <tr>
-                                    <td>{subject.subjectName}</td>
-                                </tr>
-                            ))}
+                            {subjects.length ?
+                                subjects.map((subject) => (
+                                    <tr>
+                                        <td>{subject.subjectName}</td>
+                                    </tr>
+                                ))
+                                : <tr>
+                                    <td>Nu a fost adăugat niciun subiect.</td>
+                                </tr>}
                         </tbody>
                     </Table>
                 </div>
@@ -232,9 +241,13 @@ export default function AddObjects() {
                     <FormGroup>
                         <h4 className='font-bold'>Selectează un subiect</h4>
                         <Form.Select required onChange={handleCategorySubjectChange}>
-                            {subjects1.map((subject) => (
-                                <option value={subject.subjectId}>{subject.subjectName}</option>
-                            ))}
+                            {
+                                subjects1.length ?
+                                    subjects1.map((subject) => (
+                                        <option value={subject.subjectId}>{subject.subjectName}</option>
+                                    ))
+                                    : <></>
+                            }
                         </Form.Select>
                     </FormGroup>
                     <FormGroup>

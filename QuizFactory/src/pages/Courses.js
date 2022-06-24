@@ -35,7 +35,7 @@ export default function Courses() {
     const [chosenCourse, setChosenCourse] = useState({});
 
     const handleSubmit = (values) => {
-        if (getUserType() === 'professor') {
+        if (getUserType() === 'profesor') {
             const fields = {
                 coursename: values.coursename,
                 professorusername: getUsername()
@@ -71,10 +71,13 @@ export default function Courses() {
     const [enrolledCourses, setEnrolledCourses] = useState([]);
 
     useEffect(() => {
-        if (getUserType() === 'professor') {
+        console.log(getUserType());
+        if (getUserType() === 'profesor') {
+            console.log('a trimis');
             createAPIEndpoint(ENDPOINTS.courses)
                 .authFetchById(getUsername())
                 .then(res => {
+                    console.log(res.data);
                     setCourses(res.data);
                 })
                 .catch(err => alert(err));

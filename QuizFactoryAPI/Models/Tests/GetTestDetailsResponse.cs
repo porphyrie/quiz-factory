@@ -44,6 +44,10 @@
                 MostAnsweredQuestions = mostAnsweredQuestions;
                 LeastAnsweredQuestions = leastAnsweredQuestions;
             }
+
+            public Statistics()
+            {
+            }
         }
 
         public int TestId { get; set; }
@@ -55,12 +59,13 @@
         public List<Result> Results { get; set; }
         public Statistics Stats { get; set; }
 
-        public GetTestDetailsResponse(int testId, string testName, DateTime testDate, int testDuration, List<QuestionType> questionTypes, List<Result> results, Statistics stats)
+        public GetTestDetailsResponse(int testId, string testName, DateTime testDate, int testDuration, int testItemCount, List<QuestionType> questionTypes, List<Result> results, Statistics stats)
         {
             TestId = testId;
             TestName = testName;
             TestDate = testDate;
             TestDuration = testDuration;
+            TestItemCount = testItemCount;
             QuestionTypes = questionTypes;
             Results = results;
             Stats = stats;

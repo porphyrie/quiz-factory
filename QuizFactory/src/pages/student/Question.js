@@ -9,6 +9,13 @@ import TestResults from '../TestResults';
 
 export default function Question() {
 
+  const getUsername = () => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData === null)
+      return '';
+    return userData.username;
+  }
+
   const params = {
     username: useSearchParams()[0].get('username'),
     testId: useSearchParams()[0].get('testId')
@@ -27,6 +34,7 @@ export default function Question() {
   const {
     seconds,
     minutes,
+    hours,
     restart
   } = useTimer({
     expiryTimestamp, onExpire: () => {
@@ -34,12 +42,6 @@ export default function Question() {
       handleFinish();
     }
   });
-
-  const [counter, setCounter] = useState(0);
-
-  const [questionId, setQuestionId] = useState(0);
-
-  const [question, setQuestion] = useState('');
 
   useEffect(() => {
     createAPIEndpoint(ENDPOINTS.test)
@@ -53,35 +55,100 @@ export default function Question() {
       .catch(err => alert(err));
   }, []);
 
-  const navigate = useNavigate();
+  const [genQuestion, setGenQuestion] = useState(false);
 
-  //un useeffect care se modifica la counter
-  //daca testsummary este setat
-  //face request pentru urmatoarea intrebare din questiontype[counter] si seteaza intrebarea si id-ul
+  const [resultId, setResultId] = useState('');
+
+  useEffect(() => {
+    if (Object.keys(testSummary).length) {
+      const fields = {
+        testId: testSummary.testId,
+        studentUsername: getUsername()
+      }
+      createAPIEndpoint(ENDPOINTS.results)
+        .authPost(fields)
+        .then(res => {
+          setResultId(res.data.resultId);
+          console.log(res.data);
+          console.log(res.data.resultId);
+          setGenQuestion(true);
+        })
+        .catch(err => alert(err));
+    }
+  }, [testSummary]);
+
+  const [counter, setCounter] = useState(0);
+
+  const [resultDetailsId, setResultDetailsId] = useState(0);
+
+  const [question, setQuestion] = useState('');
+
+  useEffect(() => {
+    if (genQuestion === true) {
+      const params = {
+        testId: testSummary.testId,
+        username: getUsername(),
+        questionTypeId: testSummary.questionTypes[counter].id
+      }
+      createAPIEndpoint(ENDPOINTS.generatequestions)
+        .authFetchByParams(params)
+        .then(res => {
+          setResultDetailsId(res.data.resultId);
+          setQuestion(res.data.question);
+        })
+        .catch(err => alert(err));
+    }
+  }, [genQuestion, counter]);
+
+  const [response, setResponse] = useState("");
+
+  const [textareaPlaceholder, setTextareaPlaceholder] = useState('Introdu aici răspunsul tău')
+
+  const handleAnswerChange = e => {
+    setResponse(e.target.value);
+  }
 
   const handleNextQuestion = () => {
-    setCounter(counter + 1);
-    //cand dau pe urm intrebare
-    //trimit la id-ul ala raspunsul dat
+    const patchDocument = [{
+      op: 'replace',
+      path: '/answer',
+      value: response,
+    }];
+    console.log(resultDetailsId);
+    console.log(patchDocument);
+    createAPIEndpoint(ENDPOINTS.resultdetails)
+      .authPatch(resultDetailsId, patchDocument)
+      .then(res => {
+        if (counter < testSummary.questionTypes.length - 1)
+          setCounter(counter + 1);
+        setTextareaPlaceholder('Introdu aici răspunsul tău');
+      })
+      .catch(err => alert(err));
+  }
+
+  const navigate = useNavigate();
+
+  const getCurrDate = () => {
+    return new Date();
   }
 
   const handleFinish = () => {
-    alert('Răspunsurile tale au fost trimise!')
-    navigate("/tests");
+    handleNextQuestion();
+    const patchDocument = [{
+      op: 'replace',
+      path: '/finishtime',
+      value: getCurrDate()
+    }];
+    createAPIEndpoint(ENDPOINTS.results)
+      .authPatch(resultId, patchDocument)
+      .then(res => {
+        alert('Răspunsurile tale au fost trimise!');
+        navigate("/tests");
+      })
+      .catch(err => alert(err));
     //sterge din local storage obiectul
-    //de trimis datacurenta ca finish time
+    //de trimis datacurenta ca finish time - tre sa calculeze grade ul in spate/setcounter
   }
-
-  const string = `void generate_output() {
-    nod *q = vf;
-    while (q->prec) {
-        q->n += 2;
-        if (q->n != 5)
-            q->n *= 2;
-        q = q->prec;
-    }
-}
-`;
 
   return (
     <Container className='bg-violet-300 p-10 space-y-5'>
@@ -91,15 +158,16 @@ export default function Question() {
             <h2 className='font-bold text-center'>{testSummary.testName}</h2>
           </Row>
           <Row>
-            <h5 className='font-bold'>{counter + 1}. {testSummary.questionTypes[counter].templateString}</h5>
-            <pre className='font-bold text-xl'>{string}</pre>
+            {question === ''
+              ? <pre className='font-bold text-xl whitespace-pre-wrap'>{counter + 1}. {testSummary.questionTypes[counter].templateString}</pre>
+              : <pre className='font-bold text-xl whitespace-pre-wrap'>{counter + 1}. {question}</pre>}
           </Row>
           <Row>
-            <FormControl as="textarea" placeholder='Introdu aici răspunsul tău' />
+            <FormControl as="textarea" onChange={handleAnswerChange} placeholder={textareaPlaceholder} />
           </Row>
           <Row>
             <Stack direction="horizontal" className='px-0'>
-              <h6 className='font-bold'>{counter + 1} / {testSummary.itemCount} itemi | {minutes}:{seconds} minute rămase</h6>
+              <h6 className='font-bold'>{counter + 1} / {testSummary.itemCount} itemi | {hours}:{minutes}:{seconds}</h6>
               {counter < testSummary.itemCount - 1
                 ? <Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white ms-auto' onClick={handleNextQuestion}>Următoarea întrebare</Button>
                 : <Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white ms-auto' onClick={handleFinish}>Termină testul</Button>

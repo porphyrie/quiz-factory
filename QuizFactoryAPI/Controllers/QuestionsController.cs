@@ -41,5 +41,13 @@ namespace QuizFactoryAPI.Controllers
             return Ok(questions);
         }
 
+        [Authorize(Role.student)]
+        [HttpGet("generate")]
+        public IActionResult GenerateQuestion([FromQuery(Name = "testId")] int testId, [FromQuery(Name = "username")] string username, [FromQuery(Name = "questionTypeId")] int questionTypeId)
+        {
+            var question = _questionService.GenerateQuestion(testId, username, questionTypeId);
+            return Ok(question);
+        }
+
     }
 }

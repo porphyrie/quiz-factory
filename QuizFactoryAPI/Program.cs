@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using QuizFactoryAPI.Authorization;
 using QuizFactoryAPI.Data;
 using QuizFactoryAPI.Helpers;
+using QuizFactoryAPI.QuestionGenerator;
 using QuizFactoryAPI.Services;
 using System.Text.Json.Serialization;
 
@@ -12,6 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 services.AddControllers();
+
+services.AddControllersWithViews().AddNewtonsoftJson();
+
+services.AddControllers(options =>
+{
+    options.InputFormatters.Insert(0, MyJPIF.GetJsonPatchInputFormatter());
+});
 
 services.AddDbContext<QuizFactoryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("QuizFactoryDatabase")));

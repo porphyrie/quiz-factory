@@ -64,8 +64,6 @@ namespace QuizFactoryAPI.Services
                 courses = user.CoursesNavigation.ToList();
             }
 
-
-
             List<GetTestResponse> tests = new List<GetTestResponse>();
 
             foreach (var course in courses)
@@ -79,45 +77,59 @@ namespace QuizFactoryAPI.Services
 
         public GetTestDetailsResponse GetTestDetails(int testId)
         {
-            var test = _context.Tests.FirstOrDefault(x => x.Id == testId);
+            var test = _context.Tests.Include(t => t.TestQuestionTypes).ThenInclude(qt => qt.QuestionType).FirstOrDefault(x => x.Id == testId);
+            //include results resultdetails
+
+            var questionTypes = test.TestQuestionTypes.Select(x => new GetTestDetailsResponse.QuestionType(x.QuestionTypeId, x.QuestionType.QuestionTemplateString)).ToList();
 
             var results = test.Results.ToList();
 
-            var questionTypes = test.TestQuestionTypes.Select(x => new GetTestDetailsResponse.QuestionType(x.QuestionTypeId, x.QuestionType.QuestionTemplateString)).ToList();
-            var correctAnswers = new int[questionTypes.Count];
+            List<GetTestDetailsResponse.Result> stdResults;
+            GetTestDetailsResponse.Statistics stats;
 
-            List<GetTestDetailsResponse.Result> stdResults = new List<GetTestDetailsResponse.Result>();
 
-            foreach (var result in results)
+            if (results.Count > 0)
             {
-                var resultDetails = result.ResultDetails.ToList();
-                var correctItems = 0;
-                foreach (var item in resultDetails)
-                    if (item.Answer == item.CorrectAnswer)
-                    {
-                        correctItems++;
-                        var idx = questionTypes.FindIndex(x => x.Id == item.QuestionTypeId);
-                        correctAnswers[idx]++;
-                    }
-                float grade = correctItems / resultDetails.Count;
+                var correctAnswers = new int[questionTypes.Count];
 
-                var studentData = _context.Users.FirstOrDefault(x => x.Username == result.StudentUsername);
+                stdResults = new List<GetTestDetailsResponse.Result>();
 
-                var stdResult = new GetTestDetailsResponse.Result(studentData.Username, studentData.LastName, studentData.FirstName, grade);
-                stdResults.Add(stdResult);
+                foreach (var result in results)
+                {
+                    var resultDetails = result.ResultDetails.ToList();
+                    var correctItems = 0;
+                    foreach (var item in resultDetails)
+                        if (item.Answer == item.CorrectAnswer)
+                        {
+                            correctItems++;
+                            var idx = questionTypes.FindIndex(x => x.Id == item.QuestionTypeId);
+                            correctAnswers[idx]++;
+                        }
+                    float grade = correctItems / resultDetails.Count;
+
+                    var studentData = _context.Users.FirstOrDefault(x => x.Username == result.StudentUsername);
+
+                    var stdResult = new GetTestDetailsResponse.Result(studentData.Username, studentData.LastName, studentData.FirstName, grade);
+                    stdResults.Add(stdResult);
+                }
+
+                var highestGrade = (float)results.Max(x => x.Grade);
+                var lowestGrade = (float)results.Min(x => x.Grade);
+                var avgResponseTime = (float)results.Average(x => (x.FinishTime - test.TestDate).Value.Minutes);
+                var maxQuestionTypeIdx = correctAnswers.Where(x => x == correctAnswers.Max()).Select((x, idx) => idx);
+                var maxQuestionTypes = questionTypes.Where((x, idx) => maxQuestionTypeIdx.Contains(idx)).ToList();
+                var minQuestionTypeIdx = correctAnswers.Where(x => x == correctAnswers.Min()).Select((x, idx) => idx);
+                var minQuestionTypes = questionTypes.Where((x, idx) => minQuestionTypeIdx.Contains(idx)).ToList();
+
+                stats = new GetTestDetailsResponse.Statistics(highestGrade, lowestGrade, avgResponseTime, maxQuestionTypes, minQuestionTypes);
+            }
+            else
+            {
+                stdResults = new List<GetTestDetailsResponse.Result>();
+                stats = new GetTestDetailsResponse.Statistics();
             }
 
-            var highestGrade = (float)results.Max(x => x.Grade);
-            var lowestGrade = (float)results.Min(x => x.Grade);
-            var avgResponseTime = (float)results.Average(x => (x.FinishTime - test.TestDate).Value.Minutes);
-            var maxQuestionTypeIdx = correctAnswers.Where(x => x == correctAnswers.Max()).Select((x, idx) => idx);
-            var maxQuestionTypes = questionTypes.Where((x, idx) => maxQuestionTypeIdx.Contains(idx)).ToList();
-            var minQuestionTypeIdx = correctAnswers.Where(x => x == correctAnswers.Min()).Select((x, idx) => idx);
-            var minQuestionTypes = questionTypes.Where((x, idx) => minQuestionTypeIdx.Contains(idx)).ToList();
-
-            var stats = new GetTestDetailsResponse.Statistics(highestGrade, lowestGrade, avgResponseTime, maxQuestionTypes, minQuestionTypes);
-
-            return new GetTestDetailsResponse(test.Id, test.TestName, test.TestDate, test.TestDuration, questionTypes, stdResults, stats);
+            return new GetTestDetailsResponse(test.Id, test.TestName, test.TestDate, test.TestDuration, questionTypes.Count, questionTypes, stdResults, stats);
         }
 
         public GetTestSummaryResponse GetTestSummary(int testId)

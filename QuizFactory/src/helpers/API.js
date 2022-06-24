@@ -10,9 +10,12 @@ export const ENDPOINTS = {
     subjects: 'subjects',
     categories: 'categories',
     questions: 'questions',
+    generatequestions: 'questions/generate',
     tests: 'tests',
     test: 'tests/test',
     enrollment: 'courses/enrollment',
+    resultdetails: 'results/details',
+    results: 'results'
 }
 
 export const createAPIEndpoint = endpoint => {
@@ -40,6 +43,7 @@ export const createAPIEndpoint = endpoint => {
         authFetchById: id => axios.get(url + '/' + id, config), //to retrieve one specific record
         authFetchByParams: params => axios.get(url, { ...config, params }),
         authPost: newRecord => axios.post(url, newRecord, config),
+        authPatch: (id, updateRecord) => axios.patch(url + '/' + id, updateRecord, config),
         authPut: (id, updateRecord) => axios.put(url + '/' + id, updateRecord, config),
         authDelete: id => axios.delete(url + '/' + id, config)
         //they will make a request to the corresponding web api methods of the type post get etc

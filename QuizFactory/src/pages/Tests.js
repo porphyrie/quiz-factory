@@ -59,8 +59,8 @@ export default function Tests() {
     navigate('/question/?username=' + getUsername() + '&testId=' + testId);
   }
 
-  const handleVisualizeResults = () => {
-    navigate("/testresults");
+  const handleVisualizeResults = (testId) => {
+    navigate('/testresults/?username=' + getUsername() + '&testId=' + testId);
   }
 
   const handleVisualizeDetails = (testId) => {
@@ -112,19 +112,19 @@ export default function Tests() {
                                   ?
                                   <>
                                     <Row><Button type='button' disabled className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
-                                    <Row><Button type='button' disabled className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults}>Vizualizează rezultatele</Button></Row>
+                                    <Row><Button type='button' disabled className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
                                   </>
                                   :
                                   getCurrDate() >= test.testDate && getCurrDate() <= addMinToDate(test.testDate, test.testDuration)
                                     ?
                                     <>
                                       <Row><Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
-                                      <Row><Button type='button' disabled className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults}>Vizualizează rezultatele</Button></Row>
+                                      <Row><Button type='button' disabled className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
                                     </>
                                     :
                                     <>
                                       <Row><Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
-                                      <Row><Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults}>Vizualizează rezultatele</Button></Row>
+                                      <Row><Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
                                     </>
                               )
                             }
