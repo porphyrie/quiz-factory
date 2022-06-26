@@ -3,24 +3,11 @@ import * as yup from 'yup';
 import React, { useEffect, useState } from 'react'
 import { Button, Container, Form, FormGroup, Row, Stack, Table } from 'react-bootstrap'
 import { createAPIEndpoint, ENDPOINTS } from '../helpers/API';
+import { getUsername, getUserType } from '../helpers/User';
 
 export default function Courses() {
 
     const [courses, setCourses] = useState([])
-
-    const getUserType = () => {
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (userData === null)
-            return '';
-        return userData.role;
-    }
-
-    const getUsername = () => {
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (userData === null)
-            return '';
-        return userData.username;
-    }
 
     const schema = yup.object().shape({
         coursename: yup.string().required('Required'),

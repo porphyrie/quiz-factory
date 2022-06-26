@@ -5,15 +5,10 @@ import { parse } from 'postcss'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Container, Row, Table } from 'react-bootstrap'
 import { createAPIEndpoint, ENDPOINTS } from '../helpers/API'
+import { getUsername, getUserType } from '../helpers/User'
+import { addMinToDate, formatDate, getCurrDate, getDateFromString } from '../helpers/Date'
 
 export default function Tests() {
-
-  const getUsername = () => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    if (userData === null)
-      return '';
-    return userData.username;
-  }
 
   const [tests, setTests] = useState([]);
 
@@ -29,7 +24,7 @@ export default function Tests() {
   const [answeredTests, setAnsweredTests] = useState([]);
 
   useEffect(() => {
-    if (tests.length && getUserType === 'student') {
+    if (tests.length && getUserType() === 'student') {
       createAPIEndpoint(ENDPOINTS.answeredtests)
         .authFetchById(getUsername())
         .then(res => {
@@ -38,38 +33,6 @@ export default function Tests() {
         .catch(err => alert(err));
     }
   }, [tests])
-
-  const formatDate = (date) => {
-    let tempdate = new Date(date);
-    let day = tempdate.getDate();
-    let month = tempdate.getMonth();
-    let year = tempdate.getFullYear();
-    let hour = tempdate.getHours();
-    let min = tempdate.getMinutes();
-
-    return day + '/' + month + '/' + year + " " + hour + ":" + min;
-  }
-
-  const getDateFromString = (date) => {
-    return new Date(date);
-  }
-
-  const getCurrDate = () => {
-    //console.log(new Date());
-    return new Date();
-  }
-
-  const addMinToDate = (date, min) => {
-    date = getDateFromString(date);
-    return new Date(date.getTime() + min * 60000);
-  }
-
-  const getUserType = () => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    if (userData === null)
-      return '';
-    return userData.role;
-  }
 
   const navigate = useNavigate();
 

@@ -5,16 +5,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTimer } from 'react-timer-hook';
 import Navigation from '../../components/Navigation'
 import { createAPIEndpoint, ENDPOINTS } from '../../helpers/API';
+import { addMinToDate, getCurrDate } from '../../helpers/Date';
+import { getUsername } from '../../helpers/User';
 import TestResults from '../TestResults';
 
 export default function Question() {
-
-  const getUsername = () => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    if (userData === null)
-      return '';
-    return userData.username;
-  }
 
   const params = {
     username: useSearchParams()[0].get('username'),
@@ -23,11 +18,6 @@ export default function Question() {
 
   let expiryTimestamp = new Date();
   expiryTimestamp = expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 600)
-
-  const addMinToDate = (date, min) => {
-    date = new Date(date);
-    return new Date(date.getTime() + min * 60000);
-  }
 
   const [testSummary, setTestSummary] = useState({});
 
@@ -127,10 +117,6 @@ export default function Question() {
   }
 
   const navigate = useNavigate();
-
-  const getCurrDate = () => {
-    return new Date();
-  }
 
   const handleFinish = () => {
     handleNextQuestion();

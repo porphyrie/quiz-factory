@@ -3,6 +3,7 @@ import { Accordion, Button, Container, Row, Stack } from 'react-bootstrap';
 import { useSearchParams, useParams } from 'react-router-dom';
 import Navigation from '../components/Navigation'
 import { createAPIEndpoint, ENDPOINTS } from '../helpers/API';
+import { formatDate } from '../helpers/Date';
 
 export default function TestResults() {
 
@@ -21,23 +22,12 @@ export default function TestResults() {
       .catch(err => alert(err));
   }, []);
 
-  const formatDate = (date) => {
-    let tempdate = new Date(date);
-    let day = tempdate.getDate();
-    let month = tempdate.getMonth();
-    let year = tempdate.getFullYear();
-    let hour = tempdate.getHours();
-    let min = tempdate.getMinutes();
-
-    return day + '/' + month + '/' + year + " " + hour + ":" + min;
-  }
-
   return (
     <Container className='bg-violet-300 p-10 space-y-5'>
       {Object.keys(testResults).length
         ? <>
           <Row>
-            <h4 className='font-bold px-0 text-center'>{testResults.testName}</h4>
+            <h2 className='font-bold px-0 text-center'>{testResults.testName}</h2>
           </Row>
           <Row>
             <h6 className='font-bold'>Data: {formatDate(testResults.testDate)}</h6>

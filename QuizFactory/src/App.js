@@ -14,6 +14,7 @@ import Courses from './pages/Courses';
 import AddSubjects from './pages/admin/AddSubjects';
 import AddCategories from './pages/admin/AddCategories';
 import AddQuestions from './pages/admin/AddQuestions';
+import { getUserType } from './helpers/User';
 
 export default function App() {
 
@@ -26,7 +27,7 @@ export default function App() {
           </Row>
           <Row className='flex-grow items-center px-4'>
             <Routes>
-              <Route path="/" element={<Login />} />
+              <Route path="/" element={getUserType() === '' ? <Login /> : getUserType() !== 'admin' ? <Tests /> : <AddQuestions />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/createtest" element={<CreateTest />} />

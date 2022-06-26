@@ -6,17 +6,11 @@ import { Col, Container, Form, Row, Stack, Button, FormGroup } from 'react-boots
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/Navigation';
 import { createAPIEndpoint, ENDPOINTS } from '../../helpers/API';
+import { getUsername } from '../../helpers/User';
 
 export default function CreateTest() {
 
   const navigate = useNavigate();
-
-  const getUsername = () => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    if (userData === null)
-      return '';
-    return userData.username;
-  }
 
   const [testName, setTestName] = useState('');
 

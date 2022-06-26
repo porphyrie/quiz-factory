@@ -1,28 +1,15 @@
 import React, { useState } from 'react'
 import { Button, Container, Nav, Navbar, NavDropdown, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { getUsername, getUserType } from '../helpers/User';
 
 export default function Navigation() {
-
-    const getUsername = () => {
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (userData === null)
-            return '';
-        return userData.username;
-    }
-
-    const getUserType = () => {
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (userData === null)
-            return '';
-        return userData.role;
-    }
 
     const navigate = useNavigate();
 
     const handleLogout = e => {
         localStorage.clear();
-        navigate("/");
+        navigate("/login");
     };
 
     const handleLogin = e => {
