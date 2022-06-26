@@ -22,10 +22,22 @@ export default function Tests() {
       .authFetchById(getUsername())
       .then(res => {
         setTests(res.data);
-        console.log(res.data);
       })
       .catch(err => alert(err));
   }, []);
+
+  const [answeredTests, setAnsweredTests] = useState([]);
+
+  useEffect(() => {
+    if (tests.length && getUserType === 'student') {
+      createAPIEndpoint(ENDPOINTS.answeredtests)
+        .authFetchById(getUsername())
+        .then(res => {
+          setAnsweredTests(res.data.answeredTests);
+        })
+        .catch(err => alert(err));
+    }
+  }, [tests])
 
   const formatDate = (date) => {
     let tempdate = new Date(date);
@@ -38,11 +50,17 @@ export default function Tests() {
     return day + '/' + month + '/' + year + " " + hour + ":" + min;
   }
 
+  const getDateFromString = (date) => {
+    return new Date(date);
+  }
+
   const getCurrDate = () => {
+    //console.log(new Date());
     return new Date();
   }
 
   const addMinToDate = (date, min) => {
+    date = getDateFromString(date);
     return new Date(date.getTime() + min * 60000);
   }
 
@@ -64,7 +82,7 @@ export default function Tests() {
   }
 
   const handleVisualizeDetails = (testId) => {
-    navigate("/test/" + testId);
+    navigate("/testdetails/" + testId);
   }
 
   return (
@@ -75,7 +93,7 @@ export default function Tests() {
       {getUserType() === 'profesor'
         ?
         <Row>
-          <h4 className='font-bold flex-none'><a href='/addquestions' className='text-violet-600 hover:text-violet-900'>Creează un test</a></h4>
+          <h4 className='font-bold flex-none'><a href='/createtest' className='text-violet-600 hover:text-violet-900'>Creează un test</a></h4>
         </Row>
         : <></>
       }
@@ -108,23 +126,23 @@ export default function Tests() {
                             {getUserType() === 'profesor'
                               ? (<Row><Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleVisualizeDetails(test.testId)}>Detalii</Button></Row>)
                               : (
-                                getCurrDate() < test.testDate
+                                getCurrDate() < getDateFromString(test.testDate)
                                   ?
                                   <>
-                                    <Row><Button type='button' disabled className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
-                                    <Row><Button type='button' disabled className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
+                                    <Row><Button type='button' disabled={true} className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
+                                    <Row><Button type='button' disabled={true} className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
                                   </>
                                   :
-                                  getCurrDate() >= test.testDate && getCurrDate() <= addMinToDate(test.testDate, test.testDuration)
+                                  getCurrDate() >= getDateFromString(test.testDate) && getCurrDate() <= addMinToDate(test.testDate, test.testDuration)
                                     ?
                                     <>
-                                      <Row><Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
-                                      <Row><Button type='button' disabled className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
+                                      <Row><Button type='button' disabled={false} className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
+                                      <Row><Button type='button' disabled={!answeredTests.includes(test.testId)} className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
                                     </>
                                     :
                                     <>
-                                      <Row><Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
-                                      <Row><Button type='button' className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
+                                      <Row><Button type='button' disabled={true} className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleBeginTest(test.testId)}>Începe testul</Button></Row>
+                                      <Row><Button type='button' disabled={!answeredTests.includes(test.testId)} className='bg-violet-900 hover:bg-violet-600 border-violet-900 text-white' onClick={() => handleVisualizeResults(test.testId)}>Vizualizează rezultatele</Button></Row>
                                     </>
                               )
                             }

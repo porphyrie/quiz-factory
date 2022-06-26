@@ -64,10 +64,22 @@ namespace QuizFactoryAPI.Services
             string customizedTemplatePath = globalConfig["Outputs:CustomizedTemplates"]+currTime+".cpp";
             string executablePath = globalConfig["Outputs:Executables"]+currTime+".exe";
 
-            string question, programCode, answer;
 
-            var generator = new Generator(configJSON, template, customizedTemplatePath, executablePath);
-            (question, programCode, answer) = generator.Generate(grammarJSON);
+            string question = "";
+            string programCode = "";
+            string answer = "";
+
+            if (questionType.GrammarFile != null)
+            {
+                var generator = new Generator(configJSON, template, customizedTemplatePath, executablePath);
+                (question, programCode, answer) = generator.Generate(grammarJSON);
+            }
+            else
+            {
+                File.WriteAllText(customizedTemplatePath, template);
+                var generator = new Generator(configJSON, customizedTemplatePath, executablePath);
+                (question, answer) = generator.Generate();
+            }
 
             File.Delete(customizedTemplatePath);
             File.Delete(executablePath);

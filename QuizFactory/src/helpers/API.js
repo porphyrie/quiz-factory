@@ -15,7 +15,8 @@ export const ENDPOINTS = {
     test: 'tests/test',
     enrollment: 'courses/enrollment',
     resultdetails: 'results/details',
-    results: 'results'
+    results: 'results',
+    answeredtests: 'results/answeredtests'
 }
 
 export const createAPIEndpoint = endpoint => {

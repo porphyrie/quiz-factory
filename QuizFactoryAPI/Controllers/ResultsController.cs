@@ -58,5 +58,13 @@ namespace QuizFactoryAPI.Controllers
             _resultService.UpdateResult(resultId, patchFinishTime);
             return Ok(new { message = "The result has been updated" });
         }
+
+        [Authorize(Role.student)]
+        [HttpGet("answeredtests/{username}")]
+        public IActionResult GetAnsweredTests(string username)
+        {
+            var answeredTests = _resultService.GetAnsweredTests(username);
+            return Ok(answeredTests);
+        }
     }
 }

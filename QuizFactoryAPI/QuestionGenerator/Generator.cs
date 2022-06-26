@@ -42,6 +42,14 @@ namespace QuizFactoryAPI.QuestionGenerator
             this.template = template;
         }
 
+        public Generator(string configJSON, string customizedTemplatePath, string executablePath)
+        {
+            globalConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            configuration = new Configuration(configJSON);
+            configuration.SetCustomizedTemplatePath(customizedTemplatePath);
+            configuration.SetExecutablePath(executablePath);
+        }
+
         private bool checkLineCount(List<string> programCodeLines)
         {
             if ((programCodeLines.Count > configuration.GetMinLineCount()) && (programCodeLines.Count < configuration.GetMaxLineCount()))

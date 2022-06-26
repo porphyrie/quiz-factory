@@ -77,8 +77,7 @@ namespace QuizFactoryAPI.Services
 
         public GetTestDetailsResponse GetTestDetails(int testId)
         {
-            var test = _context.Tests.Include(t => t.TestQuestionTypes).ThenInclude(qt => qt.QuestionType).FirstOrDefault(x => x.Id == testId);
-            //include results resultdetails
+            var test = _context.Tests.Include(t => t.TestQuestionTypes).ThenInclude(qt => qt.QuestionType).Include(t => t.Results).ThenInclude(r=>r.ResultDetails).FirstOrDefault(x => x.Id == testId);
 
             var questionTypes = test.TestQuestionTypes.Select(x => new GetTestDetailsResponse.QuestionType(x.QuestionTypeId, x.QuestionType.QuestionTemplateString)).ToList();
 
@@ -87,9 +86,9 @@ namespace QuizFactoryAPI.Services
             List<GetTestDetailsResponse.Result> stdResults;
             GetTestDetailsResponse.Statistics stats;
 
-
             if (results.Count > 0)
             {
+                var initCorrectAnswers = new int[questionTypes.Count];
                 var correctAnswers = new int[questionTypes.Count];
 
                 stdResults = new List<GetTestDetailsResponse.Result>();
@@ -115,8 +114,8 @@ namespace QuizFactoryAPI.Services
 
                 var highestGrade = (float)results.Max(x => x.Grade);
                 var lowestGrade = (float)results.Min(x => x.Grade);
-                var avgResponseTime = (float)results.Average(x => (x.FinishTime - test.TestDate).Value.Minutes);
-                var maxQuestionTypeIdx = correctAnswers.Where(x => x == correctAnswers.Max()).Select((x, idx) => idx);
+                var avgResponseTime = (float)results.Average(x => (x.FinishTime - test.TestDate).Value.TotalSeconds/60);
+                var maxQuestionTypeIdx = correctAnswers.Where((x, i) => x == correctAnswers.Max() && x != initCorrectAnswers[i]).Select((x, idx) => idx);
                 var maxQuestionTypes = questionTypes.Where((x, idx) => maxQuestionTypeIdx.Contains(idx)).ToList();
                 var minQuestionTypeIdx = correctAnswers.Where(x => x == correctAnswers.Min()).Select((x, idx) => idx);
                 var minQuestionTypes = questionTypes.Where((x, idx) => minQuestionTypeIdx.Contains(idx)).ToList();

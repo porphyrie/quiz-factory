@@ -34,17 +34,25 @@ export default function Navigation() {
             <Row>
                 <Navbar expand="lg" variant="light" bg="light">
                     <Container>
-                        <Navbar.Brand href='/tests' className='text-violet-900 font-black text-4xl'>EDUGEN</Navbar.Brand>
+                        {getUserType() !== 'admin'
+                            ? <Navbar.Brand href='/tests' className='text-violet-900 font-black text-4xl'>EDUGEN</Navbar.Brand>
+                            : <Navbar.Brand href='/addquestions' className='text-violet-900 font-black text-4xl'>EDUGEN</Navbar.Brand>
+                        }
                         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                         {getUsername() !== ''
                             ? <Navbar.Collapse id="responsive-navbar-nav">
-                                <Nav className="me-auto">
-                                    <Nav.Link href="#">Link</Nav.Link>
-                                    <NavDropdown title="Activități" id="basic-nav-dropdown">
-                                        <NavDropdown.Item href="/tests">Teste</NavDropdown.Item>
-                                        <NavDropdown.Item href="/courses">Cursuri</NavDropdown.Item>
-                                    </NavDropdown>
-                                </Nav>
+                                {
+                                    getUserType() !== 'admin'
+                                        ? <Nav className="me-auto">
+                                            <Nav.Link href="/tests">Teste</Nav.Link>
+                                            <Nav.Link href="/courses">Cursuri</Nav.Link>
+                                        </Nav>
+                                        : <Nav className="me-auto">
+                                            <Nav.Link href="/addsubjects">Subiecte</Nav.Link>
+                                            <Nav.Link href="/addcategories">Categorii</Nav.Link>
+                                            <Nav.Link href="/addquestions">Întrebări</Nav.Link>
+                                        </Nav>
+                                }
                                 <Nav>
                                     <Nav.Link disabled className='text-neutral-500'>@{getUsername()}</Nav.Link>
                                     <Button type='button' variant="default" className='bg-violet-900 hover:bg-violet-600 text-white' onClick={handleLogout}>Deloghează-te</Button>

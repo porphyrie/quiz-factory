@@ -48,7 +48,7 @@ export default function Question() {
       .authFetchById(params.testId)
       .then(res => {
         setTestSummary(res.data);
-        const time = addMinToDate(res.data.testDate, res.data.testDuration * 1000);
+        const time = addMinToDate(res.data.testDate, res.data.testDuration);
         restart(time);
         //sa readuca din localstorage ce e de adus, sa puna in cele 3 state uri
       })
@@ -147,7 +147,6 @@ export default function Question() {
       })
       .catch(err => alert(err));
     //sterge din local storage obiectul
-    //de trimis datacurenta ca finish time - tre sa calculeze grade ul in spate/setcounter
   }
 
   return (

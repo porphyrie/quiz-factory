@@ -15,6 +15,7 @@ namespace QuizFactoryAPI.Services
         GetResultResponse GetResult(string username, int testId);
         void UpdateResultDetails(int resultId, JsonPatchDocument<ResultDetail> patchAnswer);
         void UpdateResult(int resultId, JsonPatchDocument<Result> patchAnswer);
+        GetAnsweredTestsResponse GetAnsweredTests(string username);
     }
     public class ResultService : IResultService
     {
@@ -55,13 +56,17 @@ namespace QuizFactoryAPI.Services
         {
             var userData = _context.Users.FirstOrDefault(x => x.Username == username);
 
-            var test = _context.Tests.FirstOrDefault(x => x.Id == testId);
+            var test = _context.Tests.Include(t=> t.TestQuestionTypes).Include(t=>t.Results).ThenInclude(r=>r.ResultDetails).FirstOrDefault(x => x.Id == testId);
 
-            var grade = (float)test.Results.First(x => x.StudentUsername == username).Grade;
+            var result = test.Results.FirstOrDefault(x => x.StudentUsername == username);
 
-            var questions = test.Results.First(x => x.StudentUsername == username).ResultDetails.Select(x => new GetResultResponse.QuestionAnswer(x.Question, x.CorrectAnswer, x.Answer)).ToList();
-
-            return new GetResultResponse(userData.Username, userData.LastName, userData.FirstName, grade, test.TestName, test.TestDate, test.TestDuration, test.TestQuestionTypes.Count, questions);
+            if (result != null)
+            {
+                var questions = result.ResultDetails.Select(x => new GetResultResponse.QuestionAnswer(x.Question, x.Answer, x.CorrectAnswer)).ToList();
+                return new GetResultResponse(userData.Username, userData.LastName, userData.FirstName, (float)result.Grade, test.TestName, test.TestDate, test.TestDuration, test.TestQuestionTypes.Count, questions);
+            }
+            else
+                return null;
         }
 
         public void UpdateResultDetails(int resultId, JsonPatchDocument<ResultDetail> patchAnswer)
@@ -81,9 +86,15 @@ namespace QuizFactoryAPI.Services
             var itemCount = _context.Tests.Include(t => t.TestQuestionTypes).FirstOrDefault(x => x.Id == result.TestId).TestQuestionTypes.Count();
             var correctAnswers = result.ResultDetails.Where(x => x.CorrectAnswer == x.Answer).Count();
 
-            result.Grade=(float)correctAnswers/itemCount;
+            result.Grade=(float)correctAnswers/itemCount*10;
 
             _context.SaveChanges();
+        }
+
+        public GetAnsweredTestsResponse GetAnsweredTests (string username)
+        {
+            var answeredTests = _context.Results.Where(x => x.StudentUsername == username).Select(x => x.TestId).ToList();
+            return new GetAnsweredTestsResponse(answeredTests);
         }
     }
 }

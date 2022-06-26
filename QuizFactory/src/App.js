@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
-import AddQuestions from './pages/teacher/AddQuestions';
+import CreateTest from './pages/teacher/CreateTest';
 import Tests from './pages/Tests';
-import Test from './pages/Test';
+import TestDetails from './pages/TestDetails';
 import Question from './pages/student/Question';
 import TestResults from './pages/TestResults';
 import "./App.css";
@@ -11,7 +11,9 @@ import Navigation from './components/Navigation';
 import { Container, Row } from 'react-bootstrap';
 import Register from './pages/Register';
 import Courses from './pages/Courses';
-import AddObjects from './pages/admin/AddObjects';
+import AddSubjects from './pages/admin/AddSubjects';
+import AddCategories from './pages/admin/AddCategories';
+import AddQuestions from './pages/admin/AddQuestions';
 
 export default function App() {
 
@@ -27,13 +29,15 @@ export default function App() {
               <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/addquestions" element={<AddQuestions />} />
+              <Route path="/createtest" element={<CreateTest />} />
               <Route path="/tests" element={<Tests />} />
-              <Route path="/test/:testId" element={<Test />} />
+              <Route path="/testdetails/:testId" element={<TestDetails />} />
               <Route path="/question" element={<Question />} />
               <Route path="/testresults" element={<TestResults />} />
               <Route path="/courses" element={<Courses />} />
-              <Route path="/addobjects" element={<AddObjects />} />
+              <Route path="/addsubjects" element={<AddSubjects />} />
+              <Route path="/addcategories" element={<AddCategories />} />
+              <Route path="/addquestions" element={<AddQuestions />} />
             </Routes>
           </Row>
         </Container>

@@ -67,10 +67,10 @@ namespace QuizFactoryAPI.QuestionGenerator
                 //else
                 //    throw new Exception("The grammar path is empty!");
 
-                if (!syntaxTreeParameters["startSymbol"].Equals(""))
+                //if (!syntaxTreeParameters["startSymbol"].Equals(""))
                     startSymbol = syntaxTreeParameters["startSymbol"];
-                else
-                    throw new Exception("The start symbol is empty!");
+                //else
+                    //throw new Exception("The start symbol is empty!");
 
 
                 //this.clangformat = new Dictionary<string, string>();

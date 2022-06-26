@@ -28,7 +28,7 @@ export default function Login() {
         if (res.data.role === "profesor" || res.data.role === "student")
           navigate('/tests');
         else
-          navigate('/addobjects');
+          navigate('/addquestions');
       })
       .catch(err => alert(err));
   }
