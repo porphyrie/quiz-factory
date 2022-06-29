@@ -3,7 +3,7 @@ import { Accordion, Button, Container, Row, Stack } from 'react-bootstrap';
 import { useSearchParams, useParams } from 'react-router-dom';
 import Navigation from '../components/Navigation'
 import { createAPIEndpoint, ENDPOINTS } from '../helpers/API';
-import { formatDate } from '../helpers/Date';
+import { formatDate, getCurrDate } from '../helpers/Date';
 
 export default function TestResults() {
 
@@ -18,6 +18,7 @@ export default function TestResults() {
       .then(res => {
         setTestResults(res.data);
         console.log(res.data);
+        console.log(getCurrDate().toLocaleString());
       })
       .catch(err => alert(err));
   }, []);

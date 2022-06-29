@@ -1,0 +1,8 @@
+Mediu de dezvoltare
+Visual Studio 2022, Visual studio Code
+Install dotnet core sdk
+node
+•	npm (https://www.npmjs.com/), which is included with Node.js
+•	npx (https://www.npmjs.com/package/npx)
+
+// Rută publică/securizată, restricționată doar pentru utilizatorii x, acceptă HTTP GET/POST/ cereri și returnează

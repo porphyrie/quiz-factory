@@ -104,7 +104,7 @@ namespace QuizFactoryAPI.Services
                             var idx = questionTypes.FindIndex(x => x.Id == item.QuestionTypeId);
                             correctAnswers[idx]++;
                         }
-                    float grade = correctItems / resultDetails.Count;
+                    float grade = (float)result.Grade;
 
                     var studentData = _context.Users.FirstOrDefault(x => x.Username == result.StudentUsername);
 
@@ -115,9 +115,11 @@ namespace QuizFactoryAPI.Services
                 var highestGrade = (float)results.Max(x => x.Grade);
                 var lowestGrade = (float)results.Min(x => x.Grade);
                 var avgResponseTime = (float)results.Average(x => (x.FinishTime - test.TestDate).Value.TotalSeconds/60);
-                var maxQuestionTypeIdx = correctAnswers.Where((x, i) => x == correctAnswers.Max() && x != initCorrectAnswers[i]).Select((x, idx) => idx);
+                var maxQuestionsData = correctAnswers.Select((x, idx) => new { correctAnswersCount = x, index = idx });
+                var maxQuestionTypeIdx = maxQuestionsData.Where((x, i) => x.correctAnswersCount == correctAnswers.Except(initCorrectAnswers).Max()).Select(x=>x.index);
                 var maxQuestionTypes = questionTypes.Where((x, idx) => maxQuestionTypeIdx.Contains(idx)).ToList();
-                var minQuestionTypeIdx = correctAnswers.Where(x => x == correctAnswers.Min()).Select((x, idx) => idx);
+                var minQuestionData = correctAnswers.Select((x, idx) => new { correctAnswersCount = x, index = idx });
+                var minQuestionTypeIdx = minQuestionData.Where((x,i) => x.correctAnswersCount == correctAnswers.Except(initCorrectAnswers).Min()).Select(x=>x.index);
                 var minQuestionTypes = questionTypes.Where((x, idx) => minQuestionTypeIdx.Contains(idx)).ToList();
 
                 stats = new GetTestDetailsResponse.Statistics(highestGrade, lowestGrade, avgResponseTime, maxQuestionTypes, minQuestionTypes);

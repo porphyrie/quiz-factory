@@ -233,6 +233,9 @@ namespace QuizFactoryAPI.QuestionGenerator
             {
                 try
                 {
+
+                    var stopWatch = Stopwatch.StartNew();
+
                     CancellationTokenSource tokenSource = new CancellationTokenSource();
                     var token = tokenSource.Token;
 
@@ -244,6 +247,11 @@ namespace QuizFactoryAPI.QuestionGenerator
                     tokenSource.Cancel();
 
                     programCode = taskArray[idx].Result;
+
+                    long elapsedMilliseconds = stopWatch.ElapsedMilliseconds;
+
+                    stopWatch.Stop();
+
 
                     CustomizeTemplate(programCode);
                     CompileCustomizedTemplate();

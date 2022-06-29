@@ -123,7 +123,7 @@ export default function Question() {
     const patchDocument = [{
       op: 'replace',
       path: '/finishtime',
-      value: getCurrDate()
+      value: getCurrDate().toLocaleString()
     }];
     createAPIEndpoint(ENDPOINTS.results)
       .authPatch(resultId, patchDocument)
